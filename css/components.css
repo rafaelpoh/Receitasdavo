@@ -531,3 +531,62 @@ textarea.input-minimal {
     opacity: 1;
   }
 }
+
+/* Responsividade dos Componentes */
+@media (max-width: 600px) {
+  dialog {
+    padding: var(--space-md);
+    width: calc(100% - 2 * var(--space-sm));
+  }
+
+  .dialog-header {
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+  }
+
+  .ai-import-input-group {
+    flex-direction: column;
+  }
+
+  .ai-import-input-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .magazine-hero-image {
+    max-height: 250px;
+  }
+
+  .magazine-title {
+    font-size: var(--fs-2xl);
+  }
+
+  .details-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+    padding-bottom: var(--space-md);
+  }
+
+  .details-actions > .btn-text {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .details-actions-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--space-sm);
+    width: 100%;
+  }
+
+  .details-actions-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .image-upload-wrapper {
+    padding: var(--space-md);
+  }
+}
+

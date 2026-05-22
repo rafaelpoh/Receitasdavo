@@ -152,3 +152,35 @@ footer {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+/* Responsividade Geral */
+@media (max-width: 600px) {
+  body {
+    padding: var(--space-sm);
+  }
+
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  header .logo-group {
+    text-align: center;
+  }
+
+  header .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: var(--fs-2xl);
+  }
+
+  h2 {
+    font-size: var(--fs-xl);
+  }
+}
+
