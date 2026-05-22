@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "devCommand": "npx -y serve -l $PORT",
+  "rewrites": [
+    {
+      "source": "/share.html",
+      "destination": "/api/share"
+    }
+  ]
+}

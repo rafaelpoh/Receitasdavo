@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receitas da Vó - Seu Livro de Receitas Digital Minimalista</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Guarde, organize e compartilhe suas receitas favoritas com uma interface limpa 'modo revista'. Importe receitas automaticamente de qualquer link com a inteligência artificial do Jarvis.">
+  <meta name="robots" content="index, follow">
+  
+  <!-- CSS Layout and Token Imports -->
+  <link rel="stylesheet" href="css/var.css">
+  <link rel="stylesheet" href="css/skin.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Application Header -->
+    <header>
+      <div class="logo-group">
+        <h1 id="logo-title">Receitas da Vó</h1>
+        <p>Seu Livro Digital Minimalista</p>
+      </div>
+      <button class="btn btn-primary" id="btn-new-recipe" aria-label="Adicionar uma nova receita">
+        + Nova Receita
+      </button>
+    </header>
+
+    <!-- Main Dynamic Section (Controlled by js/app.js) -->
+    <main id="main-content">
+      <div class="empty-state">
+        <p>Carregando seu livro de receitas digital...</p>
+      </div>
+    </main>
+
+    <!-- Site Footer -->
+    <footer>
+      © 2026 Livro de Receitas Digital • Seu acervo culinário elegante e livre de distrações
+    </footer>
+  </div>
+
+  <!-- Native Modal Dialog for Adding and Editing Recipes -->
+  <dialog id="recipe-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <h2 id="dialog-title">Nova Receita</h2>
+      <button class="dialog-close" data-action="close-dialog" aria-label="Fechar diálogo">×</button>
+    </div>
+
+    <!-- AI Importer Box (Jarvis Integrator) -->
+    <section class="ai-import-box">
+      <label for="import-source">Importação Inteligente (Jarvis IA)</label>
+      <p style="font-size: var(--fs-xs); color: var(--color-text-secondary); margin-top: var(--space-xs);">
+        Cole a URL de um site de culinária ou digite uma lista de ingredientes brutos para preencher os campos automaticamente.
+      </p>
+      <div class="ai-import-input-group">
+        <input type="text" class="input-minimal" id="import-source" placeholder="Ex: https://tudogostoso.com.br/receita/... ou 'bolo de milho com coco'">
+        <button class="btn btn-primary" id="btn-import-jarvis" type="button">Importar com Jarvis</button>
+      </div>
+    </section>
+
+    <!-- Manual Form Creation / Editing -->
+    <form id="recipe-form" method="dialog">
+      <div class="form-row">
+        <!-- Title Input -->
+        <div class="form-group">
+          <label for="recipe-title">Nome da Receita *</label>
+          <input type="text" class="input-minimal" id="recipe-title" required placeholder="Ex: Bolo de Fubá Cremoso">
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="form-group">
+          <label for="recipe-category">Categoria</label>
+          <select class="input-minimal" id="recipe-category">
+            <option value="Sobremesas">Sobremesas</option>
+            <option value="Massas">Massas</option>
+            <option value="Carnes">Carnes</option>
+            <option value="Outros" selected>Outros</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ingredients Input area (Parsed by newlines) -->
+      <div class="form-group">
+        <label for="recipe-ingredients">Ingredientes * (Um por linha)</label>
+        <textarea class="input-minimal" id="recipe-ingredients" required placeholder="Ex:&#10;3 ovos&#10;2 xícaras de açúcar&#10;1 xícara de fubá"></textarea>
+      </div>
+
+      <!-- Preparation Steps area (Parsed by newlines) -->
+      <div class="form-group">
+        <label for="recipe-preparation">Modo de Preparo * (Um passo por linha)</label>
+        <textarea class="input-minimal" id="recipe-preparation" required placeholder="Ex:&#10;Bata os ingredientes no liquidificador&#10;Despeje em uma forma untada&#10;Asse por 40 minutos a 180ºC"></textarea>
+      </div>
+
+      <!-- Image Drag and Drop/Click Upload Area -->
+      <div class="form-group">
+        <label>Foto do Prato</label>
+        <div class="image-upload-wrapper" id="image-upload-area">
+          <div id="image-upload-placeholder">
+            <p>Clique aqui para adicionar a imagem da receita</p>
+            <span style="font-size: var(--fs-xs); color: var(--color-text-tertiary);">Otimização e corte automotivo inteligente</span>
+          </div>
+          <img id="image-preview" src="#" alt="Visualização do prato" class="image-upload-preview image-upload-hidden">
+        </div>
+        <!-- Hidden standard file picker -->
+        <input type="file" id="recipe-image-input" accept="image/*" class="image-upload-hidden">
+      </div>
+
+      <!-- Form Action Buttons -->
+      <div class="details-actions-group" style="justify-content: flex-end; margin-top: var(--space-xl); border-top: 1px solid var(--color-border); padding-top: var(--space-md);">
+        <button class="btn btn-secondary" type="button" data-action="close-dialog">Cancelar</button>
+        <button class="btn btn-primary" type="submit" id="btn-save-recipe">Salvar Receita</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- App Main controller -->
+  <script type="module" src="js/app.js" defer></script>
+</body>
+</html>

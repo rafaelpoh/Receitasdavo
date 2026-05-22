@@ -1,0 +1,12 @@
+{
+  "name": "receitas-da-vo",
+  "version": "1.0.0",
+  "description": "Livro de Receitas Digital Minimalista (Vanilla Version)",
+  "main": "index.html",
+  "scripts": {
+    "dev": "node start-dev.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

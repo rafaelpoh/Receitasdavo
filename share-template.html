@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Open Graph / Card Preview Metatags -->
+  <title>{{TITLE}} - Livro de Receitas Digital</title>
+  <meta name="description" content="{{OG_DESCRIPTION}}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{OG_TITLE}}">
+  <meta property="og:description" content="{{OG_DESCRIPTION}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+  <meta property="og:site_name" content="Receitas da Vovó">
+
+  <!-- Link to the central CSS tokens and components -->
+  <link rel="stylesheet" href="/css/var.css">
+  <link rel="stylesheet" href="/css/skin.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="container content-narrow">
+    <header>
+      <div class="logo-group">
+        <h1>Receitas da Vó</h1>
+        <p>Compartilhamento Público</p>
+      </div>
+      <a href="/" class="btn btn-secondary">
+        ← Ir para meu livro
+      </a>
+    </header>
+
+    <main class="magazine-view">
+      <div class="magazine-header">
+        <div class="magazine-meta">
+          <span class="magazine-meta-item">Categoria: <strong>{{CATEGORY}}</strong></span>
+          <span class="magazine-meta-item">Visualização Pública</span>
+        </div>
+        <h1 class="magazine-title">{{TITLE}}</h1>
+      </div>
+
+      <!-- Hero Image -->
+      {{HERO_IMAGE_HTML}}
+
+      <div class="magazine-body">
+        <!-- Ingredients column -->
+        <section class="ingredients-column">
+          <h2 class="magazine-section-title">Ingredientes</h2>
+          <ul class="ingredients-list">
+            {{INGREDIENTS_HTML}}
+          </ul>
+        </section>
+
+        <!-- Preparation column -->
+        <section class="preparation-column">
+          <h2 class="magazine-section-title">Modo de Preparo</h2>
+          <ol class="preparation-steps">
+            {{PREPARATION_HTML}}
+          </ol>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      © 2026 Livro de Receitas Digital • Feito com afeto
+    </footer>
+  </div>
+
+  <script type="module" defer>
+    // Event delegation on the ingredients list to support marking items 
+    // off in the kitchen, saving resources compared to individual listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      const list = document.querySelector('.ingredients-list');
+      if (list) {
+        list.addEventListener('change', (e) => {
+          if (e.target.classList.contains('ingredient-checkbox')) {
+            const itemText = e.target.nextElementSibling;
+            if (itemText) {
+              if (e.target.checked) {
+                itemText.style.textDecoration = 'line-through';
+                itemText.style.opacity = '0.5';
+              } else {
+                itemText.style.textDecoration = 'none';
+                itemText.style.opacity = '1';
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
