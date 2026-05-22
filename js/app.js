@@ -108,7 +108,7 @@ function resizeImageWithCanvas(file) {
         // Convert the resized image to a data URL (JPEG at 80% quality)
         const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
         const base64Data = dataUrl.split(',')[1];
-        resolve({ base64: base64Data, contentType: 'image/jpeg' });
+        resolve({ base64: base64Data, contentType: 'image/jpeg', dataUrl });
       };
       img.onerror = reject;
       img.src = e.target.result;
@@ -128,37 +128,17 @@ async function handleImageUpload(file) {
   showToast('Otimizando imagem...', 'info');
   try {
     // 1. Resize and compress using Canvas on the client side
-    const { base64, contentType } = await resizeImageWithCanvas(file);
+    const { dataUrl } = await resizeImageWithCanvas(file);
 
-    // 2. Upload base64 payload to Firebase Storage via backend API
-    const uploadRes = await fetch('/api/storage/upload', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        base64,
-        filename: file.name,
-        contentType
-      })
-    });
-
-    if (!uploadRes.ok) {
-      const err = await uploadRes.json().catch(() => ({}));
-      throw new Error(err.error || 'Failed to upload image.');
-    }
-
-    const data = await uploadRes.json();
-    
-    // 3. Save and preview optimized URL
-    state.uploadedImageUrl = data.url;
+    // 2. Save and preview optimized local dataUrl directly without Storage
+    state.uploadedImageUrl = dataUrl;
     imagePreview.src = state.uploadedImageUrl;
     imagePreview.classList.remove('image-upload-hidden');
     imageUploadPlaceholder.classList.add('image-upload-hidden');
     showToast('Imagem otimizada com sucesso!', 'success');
   } catch (error) {
-    console.error('Upload error:', error);
-    showToast('Ocorreu um erro no upload. Tente novamente ou use outra imagem.', 'error');
+    console.error('Processing error:', error);
+    showToast('Ocorreu um erro no processamento da imagem.', 'error');
   }
 }
 

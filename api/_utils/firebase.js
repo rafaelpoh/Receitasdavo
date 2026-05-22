@@ -17,6 +17,11 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
-const bucket = admin.storage().bucket();
+let bucket = null;
+try {
+  bucket = admin.storage().bucket();
+} catch (e) {
+  console.warn('Firebase Storage bucket could not be initialized:', e.message);
+}
 
 module.exports = { db, bucket };
