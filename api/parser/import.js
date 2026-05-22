@@ -1,4 +1,3 @@
-const apiKey = process.env.GEMINI_API_KEY;
 
 /**
  * Strips HTML tags and script/style tags to extract clean text from a web page.
@@ -28,6 +27,8 @@ function extractTextFromHtml(html) {
 }
 
 module.exports = async (req, res) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
@@ -78,7 +79,7 @@ module.exports = async (req, res) => {
     }
 
     // Call Gemini API with strict structured JSON schema
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
 
     const geminiResponse = await fetch(geminiUrl, {
       method: 'POST',
@@ -130,7 +131,7 @@ ${contentToParse}`
     }
 
     const geminiData = await geminiResponse.json();
-    const parsedText = geminiData.contents[0].parts[0].text;
+    const parsedText = geminiData.candidates[0].content.parts[0].text;
     const structuredRecipe = JSON.parse(parsedText);
 
     return res.status(200).json(structuredRecipe);

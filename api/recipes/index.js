@@ -15,7 +15,6 @@ module.exports = async (req, res) => {
       // recently added recipes at the top of the user's dashboard
       const snapshot = await db.collection('recipes')
         .where('bookId', '==', bookId)
-        .orderBy('createdAt', 'desc')
         .get();
 
       const recipes = [];
@@ -27,6 +26,13 @@ module.exports = async (req, res) => {
           createdAt: data.createdAt ? data.createdAt.toDate() : null,
           updatedAt: data.updatedAt ? data.updatedAt.toDate() : null
         });
+      });
+
+      // Ordenar em memória (mais recentes primeiro) para evitar requisitos de índice composto
+      recipes.sort((a, b) => {
+        const tA = a.createdAt ? a.createdAt.getTime() : 0;
+        const tB = b.createdAt ? b.createdAt.getTime() : 0;
+        return tB - tA;
       });
 
       return res.status(200).json(recipes);
