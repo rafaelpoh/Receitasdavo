@@ -427,7 +427,8 @@ function renderListView() {
 
     const formattedDate = new Date(recipe.createdAt).toLocaleDateString('pt-BR');
 
-    const isOwner = recipe.userId && currentUser && recipe.userId === currentUser.uid;
+    // Make edit button visible unconditionally for the user's local book session
+    const isOwner = true; 
     const cardActions = isOwner ? el('div', { class: 'card-actions', style: 'position: absolute; top: 10px; right: 10px; z-index: 10;' },
       el('button', { 
         class: 'btn btn-secondary', 
@@ -470,7 +471,8 @@ function renderDetailView(id) {
   }
 
   // Create action bar header
-  const isOwner = recipe.userId && currentUser && recipe.userId === currentUser.uid;
+  // Make edit and delete buttons visible unconditionally for the user's local book session
+  const isOwner = true;
   
   const actionsGroup = [
     el('button', { class: 'btn btn-secondary', onclick: () => handleShareRecipe(recipe._id) }, 'Compartilhar')
