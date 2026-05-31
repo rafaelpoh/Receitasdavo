@@ -7,7 +7,8 @@ const state = {
   recipes: [],
   activeView: 'list', // 'list' | 'detail'
   activeRecipeId: null,
-  uploadedImageUrl: ''
+  uploadedImageUrl: '',
+  selectedCategory: 'Todas'
 };
 
 // DOM Cache
@@ -391,9 +392,34 @@ function renderListView() {
     return;
   }
 
-  const cardsContainer = el('div', { class: 'grid-cards' });
+  // Categories filter bar
+  const categories = ['Todas', 'Sobremesas', 'Massas', 'Carnes', 'Outros'];
+  const filterBar = el('div', { class: 'filter-bar' });
+  categories.forEach(cat => {
+    const btn = el('button', {
+      class: `filter-btn${state.selectedCategory === cat ? ' active' : ''}`,
+      dataset: { category: cat }
+    }, cat);
+    filterBar.appendChild(btn);
+  });
+  mainContent.appendChild(filterBar);
+
+  const filteredRecipes = state.selectedCategory === 'Todas'
+    ? state.recipes
+    : state.recipes.filter(r => r.category === state.selectedCategory);
+
+  if (filteredRecipes.length === 0) {
+    const emptyFilter = el('div', { class: 'empty-state', style: 'margin-top: var(--space-lg);' },
+      el('h3', {}, 'Nenhuma receita encontrada'),
+      el('p', {}, `Você ainda não tem receitas na categoria "${state.selectedCategory}".`)
+    );
+    mainContent.appendChild(emptyFilter);
+    return;
+  }
+
+  const cardsContainer = el('div', { class: 'grid-cards', style: 'margin-top: var(--space-md);' });
   
-  state.recipes.forEach(recipe => {
+  filteredRecipes.forEach(recipe => {
     // Generate card layout dynamically using el() to avoid innerHTML
     const cardImg = recipe.imageUrl
       ? el('img', { src: recipe.imageUrl, class: 'recipe-card-img', alt: recipe.title, loading: 'lazy' })
@@ -604,6 +630,12 @@ btnImportJarvis.addEventListener('click', handleGeminiImport);
 delegateEvent(mainContent, '.recipe-card', 'click', (event, card) => {
   const recipeId = card.dataset.id;
   setView('detail', recipeId);
+});
+
+// Delegation for category filter buttons
+delegateEvent(mainContent, '.filter-btn', 'click', (event, btn) => {
+  state.selectedCategory = btn.dataset.category;
+  renderListView();
 });
 
 // Delegation for ingredient checkbox style toggles in active reader view
