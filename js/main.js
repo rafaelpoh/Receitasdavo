@@ -21,6 +21,7 @@ const imagePreview = document.getElementById('image-preview');
 const imageUploadPlaceholder = document.getElementById('image-upload-placeholder');
 const btnImportJarvis = document.getElementById('btn-import-jarvis');
 const inputImportSource = document.getElementById('import-source');
+const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
 
 // Auth DOM Cache
 const authDialog = document.getElementById('auth-dialog');
@@ -400,10 +401,21 @@ function renderListView() {
 
     const formattedDate = new Date(recipe.createdAt).toLocaleDateString('pt-BR');
 
+    const isOwner = recipe.userId && currentUser && recipe.userId === currentUser.uid;
+    const cardActions = isOwner ? el('div', { class: 'card-actions', style: 'position: absolute; top: 10px; right: 10px; z-index: 10;' },
+      el('button', { 
+        class: 'btn btn-secondary', 
+        style: 'padding: var(--space-xs) var(--space-sm); font-size: var(--fs-xs); background: var(--color-bg);',
+        onclick: (e) => { e.stopPropagation(); openRecipeDialog(recipe); } 
+      }, 'Editar')
+    ) : null;
+
     const card = el('article', { 
       class: 'recipe-card', 
-      dataset: { id: recipe._id } 
+      dataset: { id: recipe._id },
+      style: 'position: relative;'
     },
+      cardActions,
       cardImg,
       el('div', { class: 'recipe-card-content' },
         el('span', { class: 'recipe-card-category' }, recipe.category),
@@ -538,12 +550,14 @@ function openRecipeDialog(recipe = null) {
       imagePreview.classList.add('image-upload-hidden');
       imageUploadPlaceholder.classList.remove('image-upload-hidden');
     }
+    if (btnDeleteRecipe) btnDeleteRecipe.style.display = 'block';
   } else {
     state.activeRecipeId = null;
     dialogTitle.textContent = 'Nova Receita';
     state.uploadedImageUrl = '';
     imagePreview.classList.add('image-upload-hidden');
     imageUploadPlaceholder.classList.remove('image-upload-hidden');
+    if (btnDeleteRecipe) btnDeleteRecipe.style.display = 'none';
   }
   
   recipeDialog.showModal();
@@ -556,6 +570,17 @@ btnNewRecipe.addEventListener('click', () => openRecipeDialog());
 document.querySelectorAll('[data-action="close-dialog"]').forEach(btn => {
   btn.addEventListener('click', () => recipeDialog.close());
 });
+
+// Delete inside edit modal
+if (btnDeleteRecipe) {
+  btnDeleteRecipe.addEventListener('click', () => {
+    if (state.activeRecipeId) {
+      handleDeleteRecipe(state.activeRecipeId).then(() => {
+        recipeDialog.close();
+      });
+    }
+  });
+}
 
 // Submit form
 recipeForm.addEventListener('submit', handleFormSubmit);
