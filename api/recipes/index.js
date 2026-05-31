@@ -1,4 +1,4 @@
-const { db } = require('../_utils/firebase');
+const { db, verifyAuthToken } = require('../_utils/firebase');
 
 module.exports = async (req, res) => {
   const { method } = req;
@@ -38,6 +38,11 @@ module.exports = async (req, res) => {
       return res.status(200).json(recipes);
       
     } else if (method === 'POST') {
+      const authUser = await verifyAuthToken(req);
+      if (!authUser) {
+        return res.status(401).json({ error: 'Unauthorized. Token missing or invalid.' });
+      }
+
       const { bookId, title, category, ingredients, preparation, imageUrl } = req.body;
 
       if (!bookId || !title || !ingredients || !preparation) {
@@ -53,6 +58,7 @@ module.exports = async (req, res) => {
 
       const newRecipe = {
         bookId,
+        userId: authUser.uid,
         title: title.trim(),
         category: category || 'Outros',
         ingredients: Array.isArray(ingredients) ? ingredients.map(i => i.trim()).filter(Boolean) : [],

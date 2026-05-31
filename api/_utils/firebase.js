@@ -24,4 +24,20 @@ try {
   console.warn('Firebase Storage bucket could not be initialized:', e.message);
 }
 
-module.exports = { db, bucket };
+// Middleware utilitário para validar Token de Auth
+async function verifyAuthToken(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = authHeader.split('Bearer ')[1];
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    return decodedToken;
+  } catch (error) {
+    console.error('Error verifying auth token', error);
+    return null;
+  }
+}
+
+module.exports = { db, bucket, verifyAuthToken };

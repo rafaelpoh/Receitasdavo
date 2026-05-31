@@ -1,4 +1,5 @@
 import { el, delegateEvent, showToast } from './utils.js';
+import { onAuthChange, login, register, logout, getAuthToken, currentUser } from './auth.js';
 
 // Application State
 const state = {
@@ -20,6 +21,16 @@ const imagePreview = document.getElementById('image-preview');
 const imageUploadPlaceholder = document.getElementById('image-upload-placeholder');
 const btnImportJarvis = document.getElementById('btn-import-jarvis');
 const inputImportSource = document.getElementById('import-source');
+
+// Auth DOM Cache
+const authDialog = document.getElementById('auth-dialog');
+const authForm = document.getElementById('auth-form');
+const btnLogin = document.getElementById('btn-login');
+const btnLogout = document.getElementById('btn-logout');
+const btnToggleAuthMode = document.getElementById('btn-toggle-auth-mode');
+const authDialogTitle = document.getElementById('auth-dialog-title');
+const btnSubmitAuth = document.getElementById('btn-submit-auth');
+let isLoginMode = true;
 
 /**
  * Neutral function for backward compatibility. Returns the URL unmodified
@@ -55,7 +66,7 @@ async function initializeBook() {
 }
 
 /**
- * Fetch recipes associated with the active book from MongoDB Atlas.
+ * Fetch recipes associated with the active book from MongoDB Atlas (now generic API).
  */
 async function fetchRecipes() {
   if (!state.bookId) return;
@@ -69,6 +80,58 @@ async function fetchRecipes() {
     showToast('Não foi possível carregar as receitas da nuvem.', 'warning');
   }
 }
+
+/**
+ * Handles the Authentication modal display
+ */
+function openAuthDialog() {
+  authForm.reset();
+  isLoginMode = true;
+  updateAuthModeUI();
+  authDialog.showModal();
+}
+
+function updateAuthModeUI() {
+  if (isLoginMode) {
+    authDialogTitle.textContent = 'Entrar';
+    btnSubmitAuth.textContent = 'Entrar';
+    btnToggleAuthMode.textContent = 'Criar uma conta';
+  } else {
+    authDialogTitle.textContent = 'Nova Conta';
+    btnSubmitAuth.textContent = 'Criar Conta';
+    btnToggleAuthMode.textContent = 'Já tenho uma conta';
+  }
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+  
+  if (!email || !password) {
+    return showToast('Preencha email e senha', 'warning');
+  }
+
+  showToast('Autenticando...', 'info');
+  btnSubmitAuth.disabled = true;
+
+  try {
+    if (isLoginMode) {
+      await login(email, password);
+      showToast('Bem-vindo de volta!', 'success');
+    } else {
+      await register(email, password);
+      showToast('Conta criada com sucesso!', 'success');
+    }
+    authDialog.close();
+  } catch (err) {
+    console.error(err);
+    showToast('Erro: ' + err.message, 'error');
+  } finally {
+    btnSubmitAuth.disabled = false;
+  }
+}
+
 
 /**
  * Resizes a file image on the client side using HTML5 Canvas
@@ -232,9 +295,15 @@ async function handleFormSubmit(e) {
   showToast('Salvando receita...', 'info');
 
   try {
+    const token = await getAuthToken();
+    if (!token) throw new Error('Você precisa estar logado para salvar.');
+
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(payload)
     });
 
@@ -266,9 +335,15 @@ async function handleDeleteRecipe(id) {
 
   showToast('Excluindo receita...', 'info');
   try {
+    const token = await getAuthToken();
+    if (!token) throw new Error('Acesso negado.');
+
     const res = await fetch(`/api/recipes/detail?id=${id}`, {
       method: 'DELETE',
-      headers: { 'x-book-id': state.bookId }
+      headers: { 
+        'x-book-id': state.bookId,
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     if (!res.ok) throw new Error('Authorization or API error during delete.');
@@ -357,13 +432,20 @@ function renderDetailView(id) {
   }
 
   // Create action bar header
+  const isOwner = recipe.userId && currentUser && recipe.userId === currentUser.uid;
+  
+  const actionsGroup = [
+    el('button', { class: 'btn btn-secondary', onclick: () => handleShareRecipe(recipe._id) }, 'Compartilhar')
+  ];
+
+  if (isOwner) {
+    actionsGroup.push(el('button', { class: 'btn btn-secondary', onclick: () => openRecipeDialog(recipe) }, 'Editar'));
+    actionsGroup.push(el('button', { class: 'btn btn-danger', onclick: () => handleDeleteRecipe(recipe._id) }, 'Excluir'));
+  }
+
   const actionsBar = el('div', { class: 'details-actions' },
     el('button', { class: 'btn btn-secondary btn-text', onclick: () => setView('list') }, '← Voltar para o acervo'),
-    el('div', { class: 'details-actions-group' },
-      el('button', { class: 'btn btn-secondary', onclick: () => handleShareRecipe(recipe._id) }, 'Compartilhar'),
-      el('button', { class: 'btn btn-secondary', onclick: () => openRecipeDialog(recipe) }, 'Editar'),
-      el('button', { class: 'btn btn-danger', onclick: () => handleDeleteRecipe(recipe._id) }, 'Excluir')
-    )
+    el('div', { class: 'details-actions-group' }, ...actionsGroup)
   );
 
   // Magazine layout headers
@@ -513,9 +595,47 @@ delegateEvent(mainContent, '.ingredient-checkbox', 'change', (event, checkbox) =
   }
 });
 
+// Auth Modal Close logic
+document.querySelectorAll('[data-action="close-auth"]').forEach(btn => {
+  btn.addEventListener('click', () => authDialog.close());
+});
+
+// Auth Mode toggle
+btnToggleAuthMode.addEventListener('click', () => {
+  isLoginMode = !isLoginMode;
+  updateAuthModeUI();
+});
+
+// Auth Events
+btnLogin.addEventListener('click', openAuthDialog);
+btnLogout.addEventListener('click', () => {
+  logout();
+  showToast('Você saiu com sucesso.', 'info');
+});
+authForm.addEventListener('submit', handleAuthSubmit);
+
 // Run Initializer on script loading
 (async function init() {
   await initializeBook();
+  
+  // Auth state listener
+  onAuthChange(async (user) => {
+    if (user) {
+      btnLogin.style.display = 'none';
+      btnLogout.style.display = 'inline-flex';
+      btnNewRecipe.style.display = 'inline-flex';
+    } else {
+      btnLogin.style.display = 'inline-flex';
+      btnLogout.style.display = 'none';
+      btnNewRecipe.style.display = 'none';
+    }
+    // Refresh view to apply permissions (e.g. edit/delete buttons)
+    if (state.activeView === 'detail') {
+      renderDetailView(state.activeRecipeId);
+    }
+  });
+
   await fetchRecipes();
   setView('list');
 })();
+

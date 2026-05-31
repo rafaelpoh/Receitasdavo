@@ -1,4 +1,4 @@
-const { db } = require('../_utils/firebase');
+const { db, verifyAuthToken } = require('../_utils/firebase');
 
 module.exports = async (req, res) => {
   const { method } = req;
@@ -32,6 +32,11 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Missing bookId for authorization.' });
       }
 
+      const authUser = await verifyAuthToken(req);
+      if (!authUser) {
+        return res.status(401).json({ error: 'Unauthorized. Token missing or invalid.' });
+      }
+
       const doc = await docRef.get();
       if (!doc.exists) {
         return res.status(404).json({ error: 'Recipe not found.' });
@@ -39,9 +44,8 @@ module.exports = async (req, res) => {
 
       const recipe = doc.data();
 
-      // We verify the bookId corresponds to the owner to prevent users from 
-      // editing other people's shared recipes via the browser console
-      if (recipe.bookId !== bookId) {
+      // Verify ownership by checking the userId from the token
+      if (recipe.userId !== authUser.uid) {
         return res.status(403).json({ error: 'Unauthorized. You do not own this recipe.' });
       }
 
@@ -72,6 +76,11 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Missing bookId for authorization.' });
       }
 
+      const authUser = await verifyAuthToken(req);
+      if (!authUser) {
+        return res.status(401).json({ error: 'Unauthorized. Token missing or invalid.' });
+      }
+
       const doc = await docRef.get();
       if (!doc.exists) {
         return res.status(404).json({ error: 'Recipe not found.' });
@@ -80,7 +89,7 @@ module.exports = async (req, res) => {
       const recipe = doc.data();
 
       // We verify ownership before deleting to maintain data integrity
-      if (recipe.bookId !== bookId) {
+      if (recipe.userId !== authUser.uid) {
         return res.status(403).json({ error: 'Unauthorized. You do not own this recipe.' });
       }
 
