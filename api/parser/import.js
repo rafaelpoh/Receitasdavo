@@ -78,61 +78,75 @@ module.exports = async (req, res) => {
       contentToParse = text;
     }
 
-    // Call Gemini API with strict structured JSON schema
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+    // Lista de modelos suportados pela chave atual para resiliência contra oscilações 503
+    const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+    let structuredRecipe = null;
+    let lastErrorDetails = null;
 
-    const geminiResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Extraia a receita culinária do seguinte texto/HTML de maneira precisa. Se o texto não contiver uma receita inteligível, crie uma receita com base nos termos encontrados, estruturando os ingredientes e o modo de preparo de forma coerente.
+    for (const model of candidateModels) {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      const geminiResponse = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `Extraia a receita culinária do seguinte texto/HTML de maneira precisa. Se o texto não contiver uma receita inteligível, crie uma receita com base nos termos encontrados, estruturando os ingredientes e o modo de preparo de forma coerente.
 
 Texto de entrada:
 ${contentToParse}`
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              titulo: { type: "STRING" },
-              categoria: { 
-                type: "STRING", 
-                enum: ["Sobremesas", "Massas", "Carnes", "Outros"] 
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                titulo: { type: "STRING" },
+                categoria: { 
+                  type: "STRING", 
+                  enum: ["Sobremesas", "Massas", "Carnes", "Outros"] 
+                },
+                ingredientes: {
+                  type: "ARRAY",
+                  items: { type: "STRING" }
+                },
+                modo_preparo: {
+                  type: "ARRAY",
+                  items: { type: "STRING" }
+                }
               },
-              ingredientes: {
-                type: "ARRAY",
-                items: { type: "STRING" }
-              },
-              modo_preparo: {
-                type: "ARRAY",
-                items: { type: "STRING" }
-              }
-            },
-            required: ["titulo", "ingredientes", "modo_preparo", "categoria"]
+              required: ["titulo", "ingredientes", "modo_preparo", "categoria"]
+            }
           }
-        }
-      })
-    });
+        })
+      });
 
-    if (!geminiResponse.ok) {
-      const errBody = await geminiResponse.json().catch(() => ({}));
-      console.error('Gemini API Error details:', errBody);
-      return res.status(502).json({ error: 'Gemini API failed to parse. Please check keys or try again.' });
+      if (geminiResponse.ok) {
+        const geminiData = await geminiResponse.json();
+        const candidate = geminiData.candidates && geminiData.candidates[0];
+        if (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+          const parsedText = candidate.content.parts[0].text;
+          structuredRecipe = JSON.parse(parsedText);
+          break;
+        }
+      } else {
+        lastErrorDetails = await geminiResponse.json().catch(() => ({}));
+        console.warn(`Tentativa com modelo ${model} falhou:`, lastErrorDetails);
+      }
     }
 
-    const geminiData = await geminiResponse.json();
-    const parsedText = geminiData.candidates[0].content.parts[0].text;
-    const structuredRecipe = JSON.parse(parsedText);
+    if (!structuredRecipe) {
+      console.error('Gemini API Error details:', lastErrorDetails);
+      return res.status(502).json({ error: 'Falha ao processar receita com Jarvis IA. Tente novamente em instantes.' });
+    }
 
     return res.status(200).json(structuredRecipe);
 
