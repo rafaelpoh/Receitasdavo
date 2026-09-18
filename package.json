@@ -1,12 +1,26 @@
 {
   "name": "receitas-da-vo",
-  "version": "1.0.0",
-  "description": "Livro de Receitas Digital Minimalista (Vanilla Version)",
-  "main": "index.html",
+  "version": "2.0.0",
+  "description": "Livro de Receitas Digital Minimalista (React + TypeScript)",
+  "type": "module",
   "scripts": {
-    "dev": "node start-dev.js"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "firebase-admin": "^12.0.0"
+    "firebase": "^10.9.0",
+    "firebase-admin": "^12.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
   }
 }

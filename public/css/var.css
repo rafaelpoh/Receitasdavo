@@ -1,0 +1,109 @@
+/* Design System Variables */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* Font Families */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
+
+  /* Font Weights */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Font Sizes */
+  --fs-xs: 0.75rem;     /* 12px */
+  --fs-sm: 0.875rem;    /* 14px */
+  --fs-base: 1rem;      /* 16px */
+  --fs-md: 1.125rem;    /* 18px */
+  --fs-lg: 1.25rem;     /* 20px */
+  --fs-xl: 1.5rem;      /* 24px */
+  --fs-2xl: 2rem;       /* 32px */
+  --fs-3xl: 2.5rem;     /* 40px */
+  --fs-4xl: 3.5rem;     /* 56px */
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Border Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Light Theme (Default - Warm Editorial Magazine) */
+  --hue-base: 28; /* Warm orange/brown hue */
+  --color-bg-primary: hsl(var(--hue-base), 25%, 97%);     /* Editorial Cream */
+  --color-bg-secondary: hsl(var(--hue-base), 20%, 93%);   /* Warm Grey / Sand */
+  --color-bg-tertiary: hsl(var(--hue-base), 20%, 88%);    /* Soft Border/Element BG */
+  --color-text-primary: hsl(var(--hue-base), 40%, 12%);   /* Elegant Off-Black */
+  --color-text-secondary: hsl(var(--hue-base), 15%, 35%); /* Muted Charcoal */
+  --color-text-tertiary: hsl(var(--hue-base), 10%, 55%);  /* Light Gray Text */
+  
+  --color-accent: hsl(20, 75%, 45%);                     /* Premium Terracotta */
+  --color-accent-hover: hsl(20, 80%, 38%);
+  --color-accent-light: hsl(20, 80%, 93%);
+  
+  --color-border: hsl(var(--hue-base), 15%, 85%);
+  --color-border-hover: hsl(var(--hue-base), 15%, 70%);
+
+  --color-success: hsl(140, 50%, 35%);
+  --color-success-light: hsl(140, 50%, 93%);
+  --color-error: hsl(0, 70%, 45%);
+  --color-error-light: hsl(0, 70%, 93%);
+  --color-warning: hsl(40, 80%, 40%);
+  --color-warning-light: hsl(40, 80%, 93%);
+
+  --shadow-color: var(--hue-base), 30%, 15%;
+  --shadow-sm: 0 2px 4px hsla(var(--shadow-color), 0.04);
+  --shadow-md: 0 4px 12px hsla(var(--shadow-color), 0.06);
+  --shadow-lg: 0 12px 32px hsla(var(--shadow-color), 0.08);
+
+  --max-width-content: 800px;
+  --max-width-grid: 1200px;
+}
+
+/* Dark Theme Support (Dynamic Override) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-primary: hsl(var(--hue-base), 12%, 8%);      /* Elegant Dark Charcoal */
+    --color-bg-secondary: hsl(var(--hue-base), 10%, 13%);   /* Dark Charcoal Accent */
+    --color-bg-tertiary: hsl(var(--hue-base), 10%, 18%);
+    --color-text-primary: hsl(var(--hue-base), 20%, 94%);   /* Soft White */
+    --color-text-secondary: hsl(var(--hue-base), 10%, 75%); /* Light Sand-Grey */
+    --color-text-tertiary: hsl(var(--hue-base), 10%, 55%);
+    
+    --color-accent: hsl(20, 75%, 55%);                     /* Warmer Terracotta for dark bg */
+    --color-accent-hover: hsl(20, 80%, 63%);
+    --color-accent-light: hsl(20, 40%, 16%);
+    
+    --color-border: hsl(var(--hue-base), 10%, 18%);
+    --color-border-hover: hsl(var(--hue-base), 10%, 30%);
+
+    --color-success: hsl(140, 50%, 50%);
+    --color-success-light: hsl(140, 40%, 12%);
+    --color-error: hsl(0, 70%, 55%);
+    --color-error-light: hsl(0, 40%, 12%);
+    --color-warning: hsl(40, 80%, 50%);
+    --color-warning-light: hsl(40, 40%, 12%);
+
+    --shadow-color: 0, 0%, 0%;
+    --shadow-sm: 0 2px 4px hsla(var(--shadow-color), 0.2);
+    --shadow-md: 0 4px 12px hsla(var(--shadow-color), 0.3);
+    --shadow-lg: 0 12px 32px hsla(var(--shadow-color), 0.4);
+  }
+}

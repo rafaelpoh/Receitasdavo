@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+  <style>
+    .chef-hat {
+      fill: hsl(20, 75%, 45%);
+    }
+    @media (prefers-color-scheme: dark) {
+      .chef-hat {
+        fill: hsl(20, 75%, 55%);
+      }
+    }
+  </style>
+  <!-- Lobe Central -->
+  <circle class="chef-hat" cx="12" cy="8.5" r="4.5" />
+  <!-- Lobe Esquerdo -->
+  <circle class="chef-hat" cx="8.5" cy="11.5" r="3.5" />
+  <!-- Lobe Direito -->
+  <circle class="chef-hat" cx="15.5" cy="11.5" r="3.5" />
+  <!-- Preenchimento do meio para evitar buraco -->
+  <rect class="chef-hat" x="7" y="11" width="10" height="5" />
+  <!-- Faixa da Base -->
+  <rect class="chef-hat" x="7" y="17.5" width="10" height="3.5" rx="1" />
+</svg>

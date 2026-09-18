@@ -1,10 +1,15 @@
 {
   "version": 2,
-  "devCommand": "npx -y serve -l $PORT",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/share.html",
       "destination": "/api/share"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }

@@ -1,0 +1,73 @@
+/* Global Baseline & Browser Surfaces Theming (Impeccable Craft Floor) */
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--fs-base);
+  caret-color: var(--color-accent);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Themed Text Selection */
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-text-inverted);
+}
+
+/* Themed Custom Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-hover) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-bg-primary);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-hover);
+}
+
+/* Accessible and Themed Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+/* App Root Container */
+.app-container {
+  max-width: var(--max-width-grid);
+  margin: 0 auto;
+  padding: var(--space-md) var(--space-md) var(--space-3xl);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    padding: var(--space-xl) var(--space-xl) var(--space-3xl);
+  }
+}
